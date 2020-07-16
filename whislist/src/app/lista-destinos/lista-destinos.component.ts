@@ -22,4 +22,9 @@ export class ListaDestinosComponent implements OnInit {
     return false;
   }
 
+  elegido(item: DestinoViaje){
+    this.destinos.forEach(function(x){x.setSelected(false); });
+    item.setSelected(true);
+  }
+
 }
