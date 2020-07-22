@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +13,11 @@ export class AppComponent {
     setInterval(() => observer.next(new Date().toString()),1000);
   });
 
-  /*constructor(private translate: TranslateService) {
+  constructor(private translate: TranslateService) {
     console.log('***************** get translation');
     translate.getTranslation('en').subscribe(x => console.log('x: ' + JSON.stringify(x)));
     translate.setDefaultLang('es');
-  }*/
+  }
 
   destinoAgregado(d) {
   	//alert(d.nombre);

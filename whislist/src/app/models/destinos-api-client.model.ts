@@ -1,9 +1,10 @@
 import { DestinoViaje } from './destino-viaje.model';
 import { Subject, BehaviorSubject } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, forwardRef } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState } from '../app.module';
-import { ElegidoFavoritoAction } from './destinos-viajes-state.model';
+import { AppState, APP_CONFIG, AppConfig, db } from '../app.module';
+import { ElegidoFavoritoAction, NuevoDestinoAction } from './destinos-viajes-state.model';
+import { HttpRequest, HttpHeaders, HttpClient, HttpEvent, HttpResponse } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,33 @@ import { ElegidoFavoritoAction } from './destinos-viajes-state.model';
 export class DestinoApiClient{
 
   destinos: DestinoViaje[];
-  constructor(private store: Store<AppState>){
-    this.destinos = [];
+
+  constructor(private store: Store<AppState>,@Inject(forwardRef(() => APP_CONFIG)) private config: AppConfig,private http: HttpClient){
+    this.store.select(state => state.destinos).subscribe((data) => {
+      console.log('destinos sub store');
+      console.log(data);
+      this.destinos = data.items;
+    });
+
+    this.store.subscribe((data) => {
+      console.log('all store');
+      console.log(data);
+    });
   }
 
-  add(d: DestinoViaje){ this.destinos.push(d); }
+  add(d: DestinoViaje) {
+    const headers: HttpHeaders = new HttpHeaders({'X-API-TOKEN': 'token-seguridad'});
+    const req = new HttpRequest('POST', this.config.apiEndpoint + '/my', { nuevo: d.nombre }, { headers: headers });
+    this.http.request(req).subscribe((data: HttpResponse<{}>) => {
+      if (data.status === 200) {
+        this.store.dispatch(new NuevoDestinoAction(d));
+        const myDb = db;
+        myDb.destinos.add(d);
+        console.log('todos los destinos de la db!');
+        myDb.destinos.toArray().then(destinos => console.log(destinos))
+      }
+    });
+  }
   getAll(): DestinoViaje[]{ return this.destinos; }
   getById(id: string): DestinoViaje{ return this.destinos.filter(function(d){return d.nombre.toString() === id;})[0]; }
 
