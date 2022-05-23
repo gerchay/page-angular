@@ -26,7 +26,7 @@
     "@ngx-translate/core": "^11.0.1",
     "bootstrap": "^4.1.3",
     "core-js": "^2.5.4",
-    "dexie": "^2.0.4",
+    "dexie": "^3.2.2",
     "mapbox-gl": "^0.49.0",
     "ngx-mapbox-gl": "^2.2.0",
     "rxjs": "~6.2.0",
